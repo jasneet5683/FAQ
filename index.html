@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Q&A Portal</title>
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      text-align: center;
+    }
+    #searchWidgetTrigger {
+      width: 300px;
+      font-size: 1.1em;
+      padding: 12px;
+      margin-top: 60px;
+      border-radius: 6px;
+      border: 1px solid #007bff;
+      outline: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    h1 {
+      color: #007bff;
+    }
+  </style>
+  <!-- Widget JavaScript bundle -->
+  <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=en_US"></script>
+</head>
+<body>
+  <h1>Customer Q&A Portal</h1>
+  <p>Type your question and click in the box below:</p>
+  
+  <!-- Search widget element is not visible by default -->
+  <gen-search-widget
+    configId="1e76eb02-a1a3-4268-a49d-b3230c804847"
+    triggerId="searchWidgetTrigger">
+  </gen-search-widget>
+
+  <!-- Trigger element for the widget -->
+  <input placeholder="Search here" id="searchWidgetTrigger" />
+</body>
+</html>
