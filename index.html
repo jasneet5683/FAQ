@@ -14,7 +14,7 @@
       width: 300px;
       font-size: 1.1em;
       padding: 12px;
-      margin-top: 60px;
+      margin-top: 30px;
       border-radius: 6px;
       border: 1px solid #007bff;
       outline: none;
@@ -23,23 +23,73 @@
     h1 {
       color: #007bff;
     }
+    #searchArea {
+      display: none; /* hidden until email is validated */
+      margin-top: 30px;
+    }
+    #emailInput, #emailButton {
+      font-size: 1em;
+      padding: 10px;
+      margin: 5px;
+    }
+    #errorMsg {
+      color: red;
+      margin-top: 10px;
+    }
   </style>
   <!-- Widget JavaScript bundle -->
   <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=en_US"></script>
 </head>
 <body>
-  <h1>Etisalat CMP User Guide</h1>
-  <p>Click in the box below and Type your question:</p>
-  <!-- Search widget element is not visible by default -->
-  <gen-search-widget
-    configId="1e76eb02-a1a3-4268-a49d-b3230c804847"
-    triggerId="searchWidgetTrigger">
-  </gen-search-widget>
+  <h1>Etisalat CMP Guide</h1>
 
-  <!-- Trigger element for the widget -->
-  <input placeholder="Search here" id="searchWidgetTrigger" />
+  <!-- Email gate -->
+  <p>Enter your email to access the guide:</p>
+  <input type="email" id="emailInput" placeholder="your.email@example.com" />
+  <button id="emailButton">Continue</button>
+  <div id="errorMsg"></div>
+
+  <!-- Search area (shown only after email is validated) -->
+  <div id="searchArea">
+    <p>Click in the box below and type your question:</p>
+
+    <!-- Search widget element is not visible by default -->
+    <gen-search-widget
+      configId="1e76eb02-a1a3-4268-a49d-b3230c804847"
+      triggerId="searchWidgetTrigger">
+    </gen-search-widget>
+
+    <!-- Trigger element for the widget -->
+    <input placeholder="Search here" id="searchWidgetTrigger" />
+  </div>
+
+  <script>
+    // Allowed emails (edit this list)
+    const allowedEmails = [
+      "jasneet.singh@airlinq.com",
+      "prateek.jain@airlinq.com",
+      "shahid.kc@airlinq.com"
+    ];
+
+    const emailInput = document.getElementById("emailInput");
+    const emailButton = document.getElementById("emailButton");
+    const errorMsg   = document.getElementById("errorMsg");
+    const searchArea = document.getElementById("searchArea");
+
+    emailButton.onclick = function () {
+      const email = (emailInput.value || "").trim().toLowerCase();
+      if (!email) {
+        errorMsg.textContent = "Please enter an email address.";
+        return;
+      }
+      if (allowedEmails.includes(email)) {
+        errorMsg.textContent = "";
+        searchArea.style.display = "block";   // show widget
+      } else {
+        searchArea.style.display = "none";
+        errorMsg.textContent = "This email is not authorized to use the portal.";
+      }
+    };
+  </script>
 </body>
 </html>
-
-
-
