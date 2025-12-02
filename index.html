@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Etisalat CMP</title>
+  <title>CMP Guides</title>
   <style>
     body {
       background: #f5f5f5;
@@ -10,7 +10,25 @@
       padding: 30px;
       text-align: center;
     }
-    #searchWidgetTrigger {
+    h1 {
+      color: #007bff;
+    }
+    .btn {
+      font-size: 1em;
+      padding: 10px 18px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #007bff;
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    .btn.inactive {
+      background-color: #ffffff;
+      color: #007bff;
+    }
+    #searchWidgetTriggerEtisalat,
+    #searchWidgetTriggerBatelco {
       width: 300px;
       font-size: 1.1em;
       padding: 12px;
@@ -20,78 +38,74 @@
       outline: none;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-    h1 {
-      color: #007bff;
-    }
-    #searchArea {
-      display: none; /* hidden until email is validated */
+    .widget-area {
       margin-top: 30px;
-    }
-    #emailInput, #emailButton {
-      font-size: 1em;
-      padding: 10px;
-      margin: 5px;
-    }
-    #errorMsg {
-      color: red;
-      margin-top: 10px;
+      display: none; /* hidden by default; Etisalat will be shown on load */
     }
   </style>
+
   <!-- Widget JavaScript bundle -->
   <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=en_US"></script>
 </head>
 <body>
-  <h1>Etisalat CMP Guide</h1>
+  <h1>CMP Guides</h1>
+  <p>Select customer, then ask your question:</p>
 
-  <!-- Email gate -->
-  <p>Enter your email to access the guide:</p>
-  <input type="email" id="emailInput" placeholder="your.email@example.com" />
-  <button id="emailButton">Continue</button>
-  <div id="errorMsg"></div>
+  <!-- Customer selector buttons -->
+  <button id="btnEtisalat" class="btn">Etisalat</button>
+  <button id="btnBatelco" class="btn inactive">Batelco</button>
 
-  <!-- Search area (shown only after email is validated) -->
-  <div id="searchArea">
+  <!-- Etisalat widget area -->
+  <div id="etisalatArea" class="widget-area">
+    <h2>Etisalat CMP Guide</h2>
     <p>Click in the box below and type your question:</p>
 
-    <!-- Search widget element is not visible by default -->
     <gen-search-widget
       configId="1e76eb02-a1a3-4268-a49d-b3230c804847"
-      triggerId="searchWidgetTrigger">
+      triggerId="searchWidgetTriggerEtisalat">
     </gen-search-widget>
 
-    <!-- Trigger element for the widget -->
-    <input placeholder="Search here" id="searchWidgetTrigger" />
+    <input placeholder="Search here" id="searchWidgetTriggerEtisalat" />
+  </div>
+
+  <!-- Batelco widget area -->
+  <div id="batelcoArea" class="widget-area">
+    <h2>Batelco CMP Guide</h2>
+    <p>Click in the box below and type your question:</p>
+
+    <gen-search-widget
+      configId="a190ebfb-2deb-4964-9b36-3f988804669f"
+      triggerId="searchWidgetTriggerBatelco">
+    </gen-search-widget>
+
+    <input placeholder="Search here" id="searchWidgetTriggerBatelco" />
   </div>
 
   <script>
-    // Allowed emails (edit this list)
-    const allowedEmails = [
-      "jasneet.singh@airlinq.com",
-      "prateek.jain@airlinq.com",
-      "sanjay.gautam@airlinq.com",
-      "shahid.kc@airlinq.com"
-    ];
+    const btnEtisalat = document.getElementById("btnEtisalat");
+    const btnBatelco = document.getElementById("btnBatelco");
+    const etisalatArea = document.getElementById("etisalatArea");
+    const batelcoArea = document.getElementById("batelcoArea");
 
-    const emailInput = document.getElementById("emailInput");
-    const emailButton = document.getElementById("emailButton");
-    const errorMsg   = document.getElementById("errorMsg");
-    const searchArea = document.getElementById("searchArea");
+    function showEtisalat() {
+      etisalatArea.style.display = "block";
+      batelcoArea.style.display = "none";
+      btnEtisalat.classList.remove("inactive");
+      btnBatelco.classList.add("inactive");
+    }
 
-    emailButton.onclick = function () {
-      const email = (emailInput.value || "").trim().toLowerCase();
-      if (!email) {
-        errorMsg.textContent = "Please enter an email address.";
-        return;
-      }
-      if (allowedEmails.includes(email)) {
-        errorMsg.textContent = "";
-        searchArea.style.display = "block";   // show widget
-      } else {
-        searchArea.style.display = "none";
-        errorMsg.textContent = "This email is not authorized to use the portal.";
-      }
-    };
+    function showBatelco() {
+      etisalatArea.style.display = "none";
+      batelcoArea.style.display = "block";
+      btnEtisalat.classList.add("inactive");
+      btnBatelco.classList.remove("inactive");
+    }
+
+    btnEtisalat.onclick = showEtisalat;
+    btnBatelco.onclick = showBatelco;
+
+    // Show Etisalat by default on page load
+    showEtisalat();
   </script>
 </body>
 </html>
-
