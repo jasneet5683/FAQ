@@ -27,8 +27,8 @@
       background-color: #ffffff;
       color: #007bff;
     }
-    #searchWidgetTgerEtisalat,
-    #searchWidgetTriggerBatel {
+    #searchWidgetTriggerEtisalat,
+    #searchWidgetTriggerBatelco {
       width: 300px;
       font-size: 1.1em;
       padding: 12px;
@@ -53,7 +53,8 @@
       font-size: 1em;
       white-space: pre-wrap;
       overflow-y: auto;
-      max-height: 300-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-height: 300px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
   </style>
 
@@ -68,7 +69,9 @@
 
   <div id="etisalatArea" class="widget-area">
     <h2>Etisalat CMP Guide</h2>
-    <p>Click in the box below and type your question:</p>-search-widget
+    <p>Click in the box below and type your question:</p>
+
+    <gen-search-widget
       configId="1e76eb02-a1a3-4268-a49d-b3230c804847"
       triggerId="searchWidgetTriggerEtisalat">
     </gen-search-widget>
@@ -82,7 +85,7 @@
     <p>Click in the box below and type your question:</p>
 
     <gen-search-widget
-      configId="38c515ce-7666-4779-99d-db23a2756e9d"
+      configId="38c515ce-7666-4779-99cd-db23a2756e9d"
       triggerId="searchWidgetTriggerBatelco">
     </gen-search-widget>
 
@@ -128,19 +131,29 @@
       return tempDiv.textContent.trim();
     }
 
-    document.querySelector('gen-search-widget[configId="1e76eb02-a1a3-4268-a49d-b3230c804847"]')
-      .addEventListener('gen-search-widget-response', event => {
-        const rawResult = event.detail?.html || event.detail?.text || '';
-        const cleaned = cleanAgentResponse(rawResult);
-        document.getElementById("etisalatCleanResult").textContent = cleaned || "No results found.";
-      });
+    // Wait for widgets to load before attaching listeners
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const etisalatWidget = document.querySelector('gen-search-widget[configId="1e76eb02-a1a3-4268-a49d-b3230c804847"]');
+        const batelcoWidget = document.querySelector('gen-search-widget[configId="38c515ce-7666-4779-99cd-db23a2756e9d"]');
 
-    document.querySelector('gen-search-widget[configId="38c515ce-7666-4779-99cd-db23a2756e9d"]')
-      .addEventListener('gen-search-widget-response', event => {
-        const rawResult = event.detail?.html || event.detail?.text || '';
-        const cleaned = cleanAgentResponse(rawResult);
-        document.getElementById("batelcoCleanResult").textContent = cleaned || "No results found.";
-      });
+        if (etisalatWidget) {
+          etisalatWidget.addEventListener('gen-search-widget-response', event => {
+            const rawResult = event.detail?.html || event.detail?.text || '';
+            const cleaned = cleanAgentResponse(rawResult);
+            document.getElementById("etisalatCleanResult").textContent = cleaned || "No results found.";
+          });
+        }
+
+        if (batelcoWidget) {
+          batelcoWidget.addEventListener('gen-search-widget-response', event => {
+            const rawResult = event.detail?.html || event.detail?.text || '';
+            const cleaned = cleanAgentResponse(rawResult);
+            document.getElementById("batelcoCleanResult").textContent = cleaned || "No results found.";
+          });
+        }
+      }, 1000); // Wait 1 second for widgets to fully initialize
+    });
 
     btnEtisalat.onclick = showEtisalat;
     btnBatelco.onclick = showBatelco;
