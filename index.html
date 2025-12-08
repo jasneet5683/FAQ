@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>CMP Guides</title>
   <style>
     body {
@@ -27,8 +27,8 @@
       background-color: #ffffff;
       color: #007bff;
     }
-    #searchWidgetTriggerEtisalat,
-    #searchWidgetTriggerBatelco {
+    #searchWidgetTgerEtisalat,
+    #searchWidgetTriggerBatel {
       width: 300px;
       font-size: 1.1em;
       padding: 12px;
@@ -40,45 +40,54 @@
     }
     .widget-area {
       margin-top: 30px;
-      display: none; /* hidden by default; Etisalat will be shown on load */
+      display: none;
+    }
+    .clean-result {
+      margin-top: 20px;
+      background: white;
+      border-radius: 6px;
+      padding: 15px;
+      border: 1px solid #007bff;
+      min-height: 120px;
+      text-align: left;
+      font-size: 1em;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 300-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
   </style>
 
-  <!-- Widget JavaScript bundle -->
   <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=en_US"></script>
 </head>
 <body>
   <h1>CMP Guides</h1>
   <p>Select customer, then ask your question:</p>
 
-  <!-- Customer selector buttons -->
   <button id="btnEtisalat" class="btn">Etisalat</button>
   <button id="btnBatelco" class="btn inactive">Batelco</button>
 
-  <!-- Etisalat widget area -->
   <div id="etisalatArea" class="widget-area">
     <h2>Etisalat CMP Guide</h2>
-    <p>Click in the box below and type your question:</p>
-
-    <gen-search-widget
+    <p>Click in the box below and type your question:</p>-search-widget
       configId="1e76eb02-a1a3-4268-a49d-b3230c804847"
       triggerId="searchWidgetTriggerEtisalat">
     </gen-search-widget>
 
     <input placeholder="Search here" id="searchWidgetTriggerEtisalat" />
+    <div id="etisalatCleanResult" class="clean-result"></div>
   </div>
 
-  <!-- Batelco widget area -->
   <div id="batelcoArea" class="widget-area">
     <h2>Batelco CMP Guide</h2>
     <p>Click in the box below and type your question:</p>
 
     <gen-search-widget
-      configId="38c515ce-7666-4779-99cd-db23a2756e9d"
+      configId="38c515ce-7666-4779-99d-db23a2756e9d"
       triggerId="searchWidgetTriggerBatelco">
     </gen-search-widget>
 
     <input placeholder="Search here" id="searchWidgetTriggerBatelco" />
+    <div id="batelcoCleanResult" class="clean-result"></div>
   </div>
 
   <script>
@@ -101,12 +110,41 @@
       btnBatelco.classList.remove("inactive");
     }
 
+    function cleanAgentResponse(rawHtml) {
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = rawHtml;
+
+      const selectorsToRemove = [
+        '.source',
+        '.document-list',
+        '.citations',
+        '.metadata',
+        '.pdf-source-block'
+      ];
+      selectorsToRemove.forEach(sel => {
+        tempDiv.querySelectorAll(sel).forEach(el => el.remove());
+      });
+
+      return tempDiv.textContent.trim();
+    }
+
+    document.querySelector('gen-search-widget[configId="1e76eb02-a1a3-4268-a49d-b3230c804847"]')
+      .addEventListener('gen-search-widget-response', event => {
+        const rawResult = event.detail?.html || event.detail?.text || '';
+        const cleaned = cleanAgentResponse(rawResult);
+        document.getElementById("etisalatCleanResult").textContent = cleaned || "No results found.";
+      });
+
+    document.querySelector('gen-search-widget[configId="38c515ce-7666-4779-99cd-db23a2756e9d"]')
+      .addEventListener('gen-search-widget-response', event => {
+        const rawResult = event.detail?.html || event.detail?.text || '';
+        const cleaned = cleanAgentResponse(rawResult);
+        document.getElementById("batelcoCleanResult").textContent = cleaned || "No results found.";
+      });
+
     btnEtisalat.onclick = showEtisalat;
     btnBatelco.onclick = showBatelco;
-
-    // Show Etisalat by default on page load
     showEtisalat();
   </script>
 </body>
 </html>
-
