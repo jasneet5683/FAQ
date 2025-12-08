@@ -6,7 +6,7 @@ from flask import jsonify
 from flask_cors import cross_origin
 
 # Initialize Vertex AI
-aiplatform.init(project="YOUR_PROJECT_ID", location="us-central1")
+aiplatform.init(project="axial-yen-479414-s2", location="us-central1")
 
 @functions_framework.http
 @cross_origin()
