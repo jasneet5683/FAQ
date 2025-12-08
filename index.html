@@ -118,11 +118,11 @@
       tempDiv.innerHTML = rawHtml;
 
       const selectorsToRemove = [
-        '.source',
-        '.document-list',
-        '.citations',
-        '.metadata',
-        '.pdf-source-block'
+        '.document',
+        '.document.uri',
+        '.document.id',
+        '.document.derived_struct_data',
+        '.document.struct_data'
       ];
       selectorsToRemove.forEach(sel => {
         tempDiv.querySelectorAll(sel).forEach(el => el.remove());
@@ -161,3 +161,4 @@
   </script>
 </body>
 </html>
+
