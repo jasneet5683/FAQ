@@ -2,163 +2,85 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>CMP Guides</title>
+  <title>Call Agent API</title>
   <style>
     body {
-      background: #f5f5f5;
       font-family: Arial, sans-serif;
-      padding: 30px;
-      text-align: center;
+      margin: 2rem;
+      max-width: 600px;
     }
-    h1 {
-      color: #007bff;
+    textarea, select, button {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      font-size: 1rem;
     }
-    .btn {
-      font-size: 1em;
-      padding: 10px 18px;
-      margin: 5px;
-      border-radius: 6px;
-      border: 1px solid #007bff;
-      background-color: #007bff;
-      color: #fff;
-      cursor: pointer;
-    }
-    .btn.inactive {
-      background-color: #ffffff;
-      color: #007bff;
-    }
-    #searchWidgetTriggerEtisalat,
-    #searchWidgetTriggerBatelco {
-      width: 300px;
-      font-size: 1.1em;
-      padding: 12px;
-      margin-top: 30px;
-      border-radius: 6px;
-      border: 1px solid #007bff;
-      outline: none;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    .widget-area {
-      margin-top: 30px;
-      display: none;
-    }
-    .clean-result {
-      margin-top: 20px;
-      background: white;
-      border-radius: 6px;
-      padding: 15px;
-      border: 1px solid #007bff;
-      min-height: 120px;
-      text-align: left;
-      font-size: 1em;
+    #result {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      background: #f9f9f9;
       white-space: pre-wrap;
-      overflow-y: auto;
-      max-height: 300px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
   </style>
-
-  <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=en_US"></script>
 </head>
 <body>
-  <h1>CMP Guides</h1>
-  <p>Select customer, then ask your question:</p>
+  <h1>Call Agent API</h1>
 
-  <button id="btnEtisalat" class="btn">Etisalat</button>
-  <button id="btnBatelco" class="btn inactive">Batelco</button>
+  <label for="query">Enter your query:</label>
+  <textarea id="query" rows="4" placeholder="Type your query here...">What is the coverage area?</textarea>
 
-  <div id="etisalatArea" class="widget-area">
-    <h2>Etisalat CMP Guide</h2>
-    <p>Click in the box below and type your question:</p>
+  <label for="agentType">Select agent type:</label>
+  <select id="agentType">
+    <option value="etisalat">Etisalat</option>
+    <option value="batelco">Batelco</option>
+  </select>
 
-    <gen-search-widget
-      configId="1e76eb02-a1a3-4268-a49d-b3230c804847"
-      triggerId="searchWidgetTriggerEtisalat">
-    </gen-search-widget>
+  <button id="callBtn">Call Agent</button>
 
-    <input placeholder="Search here" id="searchWidgetTriggerEtisalat" />
-    <div id="etisalatCleanResult" class="clean-result"></div>
-  </div>
-
-  <div id="batelcoArea" class="widget-area">
-    <h2>Batelco CMP Guide</h2>
-    <p>Click in the box below and type your question:</p>
-
-    <gen-search-widget
-      configId="38c515ce-7666-4779-99cd-db23a2756e9d"
-      triggerId="searchWidgetTriggerBatelco">
-    </gen-search-widget>
-
-    <input placeholder="Search here" id="searchWidgetTriggerBatelco" />
-    <div id="batelcoCleanResult" class="clean-result"></div>
-  </div>
+  <h2>Response:</h2>
+  <pre id="result">(No response yet)</pre>
 
   <script>
-    const btnEtisalat = document.getElementById("btnEtisalat");
-    const btnBatelco = document.getElementById("btnBatelco");
-    const etisalatArea = document.getElementById("etisalatArea");
-    const batelcoArea = document.getElementById("batelcoArea");
+    const callBtn = document.getElementById('callBtn');
+    const resultEl = document.getElementById('result');
+    const apiUrl = 'https://call-agent-811485135966.us-central1.run.app';
 
-    function showEtisalat() {
-      etisalatArea.style.display = "block";
-      batelcoArea.style.display = "none";
-      btnEtisalat.classList.remove("inactive");
-      btnBatelco.classList.add("inactive");
-    }
+    callBtn.addEventListener('click', async () => {
+      const query = document.getElementById('query').value.trim();
+      const agentType = document.getElementById('agentType').value;
 
-    function showBatelco() {
-      etisalatArea.style.display = "none";
-      batelcoArea.style.display = "block";
-      btnEtisalat.classList.add("inactive");
-      btnBatelco.classList.remove("inactive");
-    }
+      if (!query) {
+        alert('Please enter a query.');
+        return;
+      }
 
-    function cleanAgentResponse(rawHtml) {
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = rawHtml;
+      resultEl.textContent = 'Loading...';
 
-      const selectorsToRemove = [
-        '.document',
-        '.document.uri',
-        '.document.id',
-        '.document.derived_struct_data',
-        '.document.struct_data'
-      ];
-      selectorsToRemove.forEach(sel => {
-        tempDiv.querySelectorAll(sel).forEach(el => el.remove());
-      });
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            query: query,
+            agent_type: agentType
+          })
+        });
 
-      return tempDiv.textContent.trim();
-    }
-
-    // Wait for widgets to load before attaching listeners
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const etisalatWidget = document.querySelector('gen-search-widget[configId="1e76eb02-a1a3-4268-a49d-b3230c804847"]');
-        const batelcoWidget = document.querySelector('gen-search-widget[configId="38c515ce-7666-4779-99cd-db23a2756e9d"]');
-
-        if (etisalatWidget) {
-          etisalatWidget.addEventListener('gen-search-widget-response', event => {
-            const rawResult = event.detail?.html || event.detail?.text || '';
-            const cleaned = cleanAgentResponse(rawResult);
-            document.getElementById("etisalatCleanResult").textContent = cleaned || "No results found.";
-          });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error: ${response.status} ${response.statusText}\n${errorText}`);
         }
 
-        if (batelcoWidget) {
-          batelcoWidget.addEventListener('gen-search-widget-response', event => {
-            const rawResult = event.detail?.html || event.detail?.text || '';
-            const cleaned = cleanAgentResponse(rawResult);
-            document.getElementById("batelcoCleanResult").textContent = cleaned || "No results found.";
-          });
-        }
-      }, 1000); // Wait 1 second for widgets to fully initialize
+        const data = await response.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+
+      } catch (err) {
+        resultEl.textContent = `Request failed:\n${err.message}`;
+      }
     });
-
-    btnEtisalat.onclick = showEtisalat;
-    btnBatelco.onclick = showBatelco;
-    showEtisalat();
   </script>
 </body>
 </html>
-
