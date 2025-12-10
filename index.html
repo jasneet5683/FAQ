@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CMP Guides</title>
+  <style>
+    body{background:#f5f5f5;font-family:Arial,sans-serif;text-align:center;padding:60px}
+    h1{color:#333;margin-bottom:40px}
+    .btn{font-size:1.2em;padding:12px 28px;margin:15px;border:none;border-radius:6px;color:#fff;cursor:pointer}
+    #btnEtisalat{background:#d32f2f}
+    #btnBatelco{background:#388e3c}
+    .area{display:none;margin-top:40px}
+    input{width:320px;font-size:1.1em;padding:10px;border:1px solid #007bff;border-radius:4px}
+    .result{margin-top:20px;background:#fff;border:1px solid #007bff;border-radius:4px;padding:15px;text-align:left;min-height:100px}
+  </style>
+  <script src="https://cloud.google.com/ai/gen-app-builder/client?hl=en_US"></script>
+</head>
+<body>
+  <h1>Welcome to CMP Guides</h1>
+
+  <button id="btnEtisalat" class="btn">Etisalat</button>
+  <button id="btnBatelco" class="btn">Batelco</button>
+
+  <div id="etisalatArea" class="area">
+    <h2>Etisalat CMP Guide</h2>
+    <gen-search-widget configId="1e76eb02-a1a3-4268-a49d-b3230c804847" triggerId="searchWidgetTriggerEtisalat"></gen-search-widget>
+    <input id="searchWidgetTriggerEtisalat" placeholder="Ask your question…">
+    <div id="etisalatResult" class="result"></div>
+  </div>
+
+  <div id="batelcoArea" class="area">
+    <h2>Batelco CMP Guide</h2>
+    <gen-search-widget configId="38c515ce-7666-4779-99d-db23a2756e9d" triggerId="searchWidgetTriggerBatelco"></gen-search-widget>
+    <input id="searchWidgetTriggerBatelco" placeholder="Ask your question…">
+    <div id="batelcoResult" class="result"></div>
+  </div>
+
+  <script>
+    const show = id => {
+      document.querySelectorAll('.area').forEach(a=>a.style.display='none');
+      document.getElementById(id).style.display='block';
+    };
+    document.getElementById('btnEtisalat').onclick = () => show('etisalatArea');
+    document.getElementById('btnBatelco').onclick = () => show('batelcoArea');
+
+    document.querySelector('gen-search-widget[configId="1e76eb02-a1a3-4268-a49d-b3230c804847"]')
+      .addEventListener('gen-search-widget-response', e => {
+        document.getElementById('etisalatResult').textContent = e.detail?.text || e.detail?.html || 'No results.';
+      });
+    document.querySelector('gen-search-widget[configId="38c515ce-7666-4779-99d-db23a2756e9d"]')
+      .addEventListener('gen-search-widget-response', e => {
+        document.getElementById('batelcoResult').textContent = e.detail?.text || e.detail?.html || 'No results.';
+      });
+  </script>
+</body>
+</html>
